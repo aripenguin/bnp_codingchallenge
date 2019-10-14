@@ -14,8 +14,8 @@ top3={}
 top4={}
 top5={}
 #top=[top1,top2,top3,top4,top5]
-top=[[top1,''],[top2,''],[top3,''],[top4,''],[top5,'']]
-#top=[[top1,'',0],[top2,'',0],[top3,'',0],[top4,'',0],[top5,'',0]]
+#top=[[top1,''],[top2,''],[top3,''],[top4,''],[top5,'']]
+top=[[top1,'',0],[top2,'',0],[top3,'',0],[top4,'',0],[top5,'',0]]
     #top[#][2]=len(top#)-non-unique
 
 
@@ -109,13 +109,13 @@ def createTimestamp():
                         top_send[row[2]][8] += 1
                 #for question 3 - have row[2]/sender row[3]/receiver
                 #top -> top1, top2 - check if row[2] belongs to the top#-top_send
-                for list,key in top:
-                    if row[2] == key:#fix the identifer
+                for sender in top:
+                    if row[2] == sender[1]:#fix the identifer
                         #needs to split them up
                         for name in row[3].split('|'):
-                            if name not in list:
+                            if name not in sender[0]:
                                 #list.append(row[3])
-                                add(list, name, 0)
+                                add(sender[0], name, 0)
     print(top_send)
     print(top)
     # close the csv?
@@ -126,29 +126,34 @@ def findUnique():
     tmp1=0
     for list in top:
         print(list)
-        print(len(list))
-        #top[tmp1][2]=len(list)
+        print(len(list[0]))
+        length=int(len(list[0]))
+        print(length)
         print(tmp1)
+        top[tmp1][2]==length#len(list[0])
+        print(top[tmp1][2])
         tmp1+=1
-    print top
+    #print top
     test=0
+    print("test")
     for i in top:
-        print(top[test][2])
+        print(top[test][1], top[test][2])
         test+=1
+
     #go through top - for each top1 value - check if in any another top# list
     tmp2=0
+    #test_num=top[tmp2][2]
     for list in top:
         for value in list[0]:
             #top1 - going through keys.
             for colist in top:
                 if value in colist[0]:
                     top[tmp2][2]-=1
+                    print (top[tmp2][1],value)
+                    #if top[tmp2][0]=top1:test_num
                     continue
         tmp2+=1
     test = 0
-    for i in top:
-        print(top[i][2])
-        test+=1
 
 def createPNG():
     print("createPNG")
@@ -192,13 +197,15 @@ def main():
     for t in abc:
         print(t)#works
 
+    for i in top:
+        print(len(i[0]))
 
     readCsv()
     writeCsv()
     createTimestamp()
-    createPNG()
-    #findUnique()
-    #createVisual()
+    #createPNG()
+    findUnique()
+    createVisual()
     #question3()
     print('end')
 
