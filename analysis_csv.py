@@ -143,7 +143,7 @@ def findUnique():
             is_found=0
             #top1 - going through keys.
             for colist in top:
-                if (value in colist[0]) and (is_found==0):
+                if (value in colist[0]) and (is_found==0)and (colist[0] != list[0]):
                     top[tmp2][2]-=1
                     #print (top[tmp2][1],value) #check if the value is being deleted once
                     #if top[tmp2][0]=top1:test_num
@@ -151,6 +151,7 @@ def findUnique():
 
         tmp2+=1
     test = 0
+    print("test-unique against each other")
     for i in top:
         print(top[test][1], top[test][2])
         test += 1
