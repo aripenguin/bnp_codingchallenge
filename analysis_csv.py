@@ -19,7 +19,6 @@ top=[[top1,'',0],[top2,'',0],[top3,'',0],[top4,'',0],[top5,'',0]]
     #top[#][2]=len(top#)-non-unique
 
 
-
 def readCsv():
     # open csv
     with open('enron-event-history-all.csv', 'r') as readFile:
@@ -28,7 +27,7 @@ def readCsv():
             # send sender or receiver names to personArr
                 singleName(2, row[2])
                 singleName(3, row[3])
-                print(row[2],row[3])
+                #print(row[2],row[3])
     #print(people)
     #close the csv?
 
@@ -125,17 +124,13 @@ def findUnique():
     #set top[#][3]s
     tmp1=0
     for list in top:
-        print(list)
-        print(len(list[0]))
-        length=int(len(list[0]))
-        print(length)
-        print(tmp1)
-        top[tmp1][2]==length#len(list[0])
-        print(top[tmp1][2])
+        #print(list)
+        #print(len(list[0]))
+        top[tmp1][2]=len(list[0])#int(length)
+        #print(top[tmp1][2])
         tmp1+=1
-    #print top
     test=0
-    print("test")
+    print("test-raw unique")
     for i in top:
         print(top[test][1], top[test][2])
         test+=1
@@ -145,15 +140,20 @@ def findUnique():
     #test_num=top[tmp2][2]
     for list in top:
         for value in list[0]:
+            is_found=0
             #top1 - going through keys.
             for colist in top:
-                if value in colist[0]:
+                if (value in colist[0]) and (is_found==0):
                     top[tmp2][2]-=1
-                    print (top[tmp2][1],value)
+                    #print (top[tmp2][1],value) #check if the value is being deleted once
                     #if top[tmp2][0]=top1:test_num
-                    continue
+                    is_found=1
+
         tmp2+=1
     test = 0
+    for i in top:
+        print(top[test][1], top[test][2])
+        test += 1
 
 def createPNG():
     print("createPNG")
@@ -189,24 +189,12 @@ def createVisual():
 
 def main():
     print('start')
-    a=['tee','gee','dee']
-    b = ['qee', 'see', 'fee']
-    if 'tee' in a:
-        print("yes")
-    abc=[a,b]
-    for t in abc:
-        print(t)#works
-
-    for i in top:
-        print(len(i[0]))
-
     readCsv()
     writeCsv()
     createTimestamp()
-    #createPNG()
+    createPNG()
     findUnique()
-    createVisual()
-    #question3()
+    #createVisual()#not ready for testing
     print('end')
 
 
