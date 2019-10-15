@@ -23,29 +23,35 @@ top_receive={}#holds person:[0*9] like top_send but holds the # of unique people
 unique_receive={}#holds person:[0*9] like top_received but only hold the # of unique people across the top5
 
 
-def readCsv():
+def readCsv():#add variable csv
     # open csv
-    with open('enron-event-history-all.csv', 'r') as readFile:
+    with open('enron-event-history-all.csv', 'r') as readFile:#add variable csv
         read = csv.reader(readFile, delimiter=',')
         for row in read:
             # send sender or receiver names to personArr
-                singleName(2, row[2])
-                singleName(3, row[3])
+                #singleName(2, row[2])
+                #singleName(3, row[3])
                 #print(row[2],row[3])
+                #PersonArr(2, singleName(row[2]))
+                for name in singleName(row[2]):
+                    PersonArr(2, name)
+                for name in singleName(row[3]):
+                    PersonArr(3, name)
     #print(people)
     #close the csv?
 
-def singleName(num,per):
-        #print(num,per)
+def singleName(per):
     # check if per is a single name or has no '|'
     if '|' in per:
+        return per.split('|')
         # split and send all to personArr
-        for p in per.split('|'):
-            personArr(num, p)
-            #print p
+        #for p in per.split('|'):
+            #personArr(num, p)
+            #return per
     else:
-        personArr(num, per)
-
+        #personArr(num, per)
+        return [per,]
+                          
 def personArr(num, per):
     #try to do [per, #,#], if failed append
     if per not in people.keys(): #expression for any integer is wrong
@@ -78,29 +84,35 @@ def writeCsv():
                 top[tmp][1]=key
                 tmp += 1
 
-def createTimestamp():
-    print("createTimestamp")
-    #top 10 -10 timestamps
-    #print(top_send)
-    with open('enron-event-history-all.csv', 'r') as readFile:
+def createTimestamp():#add variable csv
+    #opens the csv file again this time for question 2 & 3
+    with open('enron-event-history-all.csv', 'r') as readFile:#add variable csv
         read = csv.reader(readFile, delimiter=',')
         for row in read:
             #call singlename for row[2] and row[3]
+            for name in singleName(row[2]):
+                    if name in top_send:
+                        findTimestamp(name,top_send, null, row[0])
+                    for name2 in singleName(row[3]):
+                        if name2 in top_receive:    
+                            findTimestamp(name2, top_receive, name, row[0])
+            
+            
             #add to a timestamp by findTimestamp()
-            if row[2] in top_send:
-                findTimestamp(row[2],top_send, null, row[0])
-            if row[3] in top_receive:    
-                findTimestamp(row[3], top_receive, row[2], row[0])
+            #if row[2] in top_send:
+                #findTimestamp(row[2],top_send, null, row[0])
+            #if row[3] in top_receive:    
+                #findTimestamp(row[3], top_receive, row[2], row[0])
                 
                 #for question 3 - have row[2]/sender row[3]/receiver
                 #top -> top1, top2 - check if row[2] belongs to the top#-top_send
-                for sender in top:
-                    if row[2] == sender[1]:#fix the identifer
+                #for sender in top:
+                    #if row[2] == sender[1]:#fix the identifer
                         #needs to split them up
-                        for name in row[3].split('|'):
-                            if name not in sender[0]:
+                        #for name in row[3].split('|'):
+                            #if name not in sender[0]:
                                 #list.append(row[3])
-                                add(sender[0], name, 0)
+                                #add(sender[0], name, 0)
     print(top_send)
     print(top)
     
@@ -179,6 +191,8 @@ def createPNG():
     stamp=['Jul-Dec\n1998','Jan-Jun\n1999','Jul-Dec\n1999',
            'Jan-Jun\n2000','Jul-Dec\n2000','Jan-Jun\n2001',
            'Jul-Dec\n2001','Jan-Jun\n2002','Jul-Dec\n2002']
+    ax = plt.subplots(1, figsize=(8, 6))
+    ax.grid()
     for key in top_send:
         print(key, top_send[key])#(2 * np.pi * np.random.rand(100))
         plt.plot(stamp,top_send[key], color=np.random.rand(3,),label=key)
@@ -187,9 +201,10 @@ def createPNG():
     plt.legend(loc='upper right')
     plt.title('Top 5 email senders over 5 year')
     #ax.grid(zorder=0)
-    #plt.show()
-    plt.savefig('sender_timeline.png')
-    #send it as a png, change the specifics - y label & grid background
+    plt.yticks(np.arange(min(y), max(y)+1, 100))
+    plt.show()
+    #plt.savefig('sender_timeline.png')
+    #change the specifics - y label & grid background
 
 def createVisual():
     print("In createVisual")
@@ -197,26 +212,30 @@ def createVisual():
     stamp=['Jul-Dec\n1998','Jan-Jun\n1999','Jul-Dec\n1999',
            'Jan-Jun\n2000','Jul-Dec\n2000','Jan-Jun\n2001',
            'Jul-Dec\n2001','Jan-Jun\n2002','Jul-Dec\n2002']
+    fig, ax = plt.subplots(1, figsize=(8, 6))
+    fig.suptitle('Senders')
+    ax.grid()
     for key in top:
         color=np.random.rand(3,)
-        #print(key, top_send[key])#(2 * np.pi * np.random.rand(100))
         plt.plot(stamp,top_receive[key], color=color,label=key)#straight
-        plt.plot(stamp,unique_receive[key], color=color)#dashed - ,label=key
+        plt.plot(stamp,unique_receive[key], color=color,linestyle='--')#dashed - ,label=key
         
     plt.ylabel('Number of emails received')
     plt.xlabel('Time')
     plt.legend(loc='upper right')
     plt.title('Top 5 email senders over 5 year')
     #ax.grid(zorder=0)
+    plt.yticks(np.arange(min(y), max(y)+1, 100))
     plt.show()
-    #send it as a png, change the specifics - y label & grid background
+    #change the specifics - y label & grid background, name popup
 
 
 def main():
     print('start')
-    readCsv()
+    #csv=sys.argv[1]
+    readCsv()#add variable csv
     writeCsv()
-    createTimestamp()
+    createTimestamp()#add variable csv
     createPNG()
     findUnique()
     #createVisual()#not ready for testing
