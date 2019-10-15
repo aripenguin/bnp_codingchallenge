@@ -14,14 +14,13 @@ top2={}#same as top1 but for top2
 top3={}#same as top1 but for top3
 top4={}#same as top1 but for top4
 top5={}#same as top1 but for top5
-#top=[top1,top2,top3,top4,top5]
-#top=[[top1,''],[top2,''],[top3,''],[top4,''],[top5,'']]
-top=[[top1,'',0],[top2,'',0],[top3,'',0],[top4,'',0],[top5,'',0]]
-    #top[#][2]=len(top#)-non-unique
-#top is used to connect the list of top# to the person. might get rid of [2]
+    #top=[top1,top2,top3,top4,top5]
+top=[[top1,''],[top2,''],[top3,''],[top4,''],[top5,'']]
+    #top=[[top1,'',0],[top2,'',0],[top3,'',0],[top4,'',0],[top5,'',0]]
+    
 
-#top_received={}#holds person:[0*9] like top_send but holds the # of unique people who contacted the person over the timestamps 
-#unique_received={}#holds person:[0*9] like top_received but only hold the # of unique people across the top5
+top_receive={}#holds person:[0*9] like top_send but holds the # of unique people who contacted the person over the timestamps 
+unique_receive={}#holds person:[0*9] like top_received but only hold the # of unique people across the top5
 
 
 def readCsv():
@@ -75,6 +74,7 @@ def writeCsv():
                 #save the top 5 for png file
                 print(key,value)
                 add(top_send, key, [0,0,0,0,0,0,0,0,0])
+                add(top_receive, key, [0,0,0,0,0,0,0,0,0])
                 top[tmp][1]=key
                 tmp += 1
 
@@ -85,32 +85,13 @@ def createTimestamp():
     with open('enron-event-history-all.csv', 'r') as readFile:
         read = csv.reader(readFile, delimiter=',')
         for row in read:
+            #call singlename for row[2] and row[3]
+            #add to a timestamp by findTimestamp()
             if row[2] in top_send:
-                #add to a timestamp by findTimestamp()
-                year=datetime.datetime.fromtimestamp(float(row[0]) / 1000.0).strftime('%Y')
-                month=datetime.datetime.fromtimestamp(float(row[0]) / 1000.0).strftime('%m')
-                if year == '1998':
-                    top_send[row[2]][0] += 1
-                elif year == '1999':
-                    if 1<=float(month)<=6:
-                        top_send[row[2]][1] += 1
-                    else:
-                        top_send[row[2]][2] += 1
-                elif year == '2000':
-                    if 1<=float(month)<=6:
-                        top_send[row[2]][3] += 1
-                    else:
-                        top_send[row[2]][4] += 1
-                elif year == '2001':
-                    if 1 <= float(month) <= 6:
-                        top_send[row[2]][5] += 1
-                    else:
-                        top_send[row[2]][6] += 1
-                elif year == '2002':
-                    if 1 <= float(month) <= 6:
-                        top_send[row[2]][7] += 1
-                    else:
-                        top_send[row[2]][8] += 1
+                findTimestamp(row[2],top_send, null, row[0])
+            if row[3] in top_receive:    
+                findTimestamp(row[3], top_receive, row[2], row[0])
+                
                 #for question 3 - have row[2]/sender row[3]/receiver
                 #top -> top1, top2 - check if row[2] belongs to the top#-top_send
                 for sender in top:
@@ -122,60 +103,73 @@ def createTimestamp():
                                 add(sender[0], name, 0)
     print(top_send)
     print(top)
-    # close the csv?
-def findTimeStamp():
-    #takes in name (row[2] or row[3]), dict_top (top_send or top_receive), list (top1 .. for receive)
-    year=datetime.datetime.fromtimestamp(float(row[0]) / 1000.0).strftime('%Y')
-    month=datetime.datetime.fromtimestamp(float(row[0]) / 1000.0).strftime('%m')
+    
+def findTimestamp(name,dict_top,sender,time):
+    #takes in name (row[2] or row[3]), dict_top (top_send or top_receive), sender (for receive)
+    year=datetime.datetime.fromtimestamp(float(time) / 1000.0).strftime('%Y')
+    month=datetime.datetime.fromtimestamp(float(time) / 1000.0).strftime('%m')
     count=0 #holds timestamp id
+        #change these if to for loop?
     if year == '1998':
         dict_top[name][0]+=1
         count=0
-    #... for all 8 other timestamps
-    #top_receive also has to send the people to 
-    #change above to a for loop?
-                #If dict_top=top_received: add(list,name,counter#needs adjusts
+    elif year == '1999':
+        if 1<=float(month)<=6:
+            dict_top[name][1]+=1
+            count=1
+        else:
+            dict_top[name][2]+=1
+            count=2
+    elif year == '2000':
+        if 1<=float(month)<=6: 
+            dict_top[name][3]+=1
+            count=3
+        else:
+            dict_top[name][4]+=1
+            count=4
+    elif year == '2001':
+        if 1 <= float(month) <= 6:
+            dict_top[name][5]+=1
+            count=5
+        else:
+            dict_top[name][6]+=1
+            count=6
+    elif year == '2002':
+        if 1 <= float(month) <= 6:
+            dict_top[name][7]+=1
+            count=7
+        else:
+            dict_top[name][8]+=1
+            count=8
+    #top_receive also has to send the person name to top#
+    if dict_top=top_receive:
+        for person in top:
+            if name = person[1]: 
+                add(person[0],sender,count)
 
     
 def findUnique():
     print("In findUnique")
-    #set top[#][3]s
-    tmp1=0#do not need 135-146 anymore
-    for list in top:
-        #print(list)
-        #print(len(list[0]))
-        top[tmp1][2]=len(list[0])#int(length)
-        #print(top[tmp1][2])
-        tmp1+=1
-    test=0
-    print("test-raw unique")
-    for i in top:
-        print(top[test][1], top[test][2])
-        test+=1
-    
     #top_receive will be filled from create & findTimestamp -> set unique_receive = top_receive
-    #go through below to subtract from timestamp if someone in top# is in another top#
+    unique_receive=top_receive
     
-    #go through top - for each top1 value - check if in any another top# list
-    #tmp2=0
-    #test_num=top[tmp2][2]
+    #go through below to subtract from timestamps if someone in top# is in another top#
     for list in top:#[top#,name]
         for value in list[0]:
             is_found=0
             for colist in top:
                 if (value in colist[0]) and (is_found==0)and (colist[0] != list[0]):
                     #no changes to if statement - just nee to make should correct value in unique is subtracts
-                    #stamp=value.value 
-                    #unique_receive[list[1]][stamp] -= 1
-                    top[tmp2][2]-=1
-                    #print (top[tmp2][1],value) #check if the value is being deleted once
+                    stamp=value.value 
+                    unique_receive[list[1]][stamp] -= 1
+                    #top[tmp2][2]-=1
+                    print (top[list[1]],value) #check if the value is being deleted once
                     #if top[tmp2][0]=top1:test_num
                     is_found=1
-
-        #tmp2+=1
+                    
     test = 0
     print("test-unique against each other")
-    for i in top:
+    fori in top:
         print(top[test][1], top[test][2])
         test += 1
 
@@ -199,16 +193,23 @@ def createPNG():
 
 def createVisual():
     print("In createVisual")
-    bars=[[1,0],[4,0],[2,0],[3,0],[3,0]]
-    X= np.arange(3)
-    #for key in top:
-        #set bar lengths and name
-        #plt.bar(X + 0.00, bars[0][0], color='b', width=0.25)
-        #plt.bar(X + 0.00, bars[0][1], color='b', width=0.25)
-
-    plt.bar(X + 0.00, bars[0][0], color='b', width=0.25)
-    plt.bar(X + 0.00, bars[0][1], color='g', width=0.25)
+    #create line graph for top 10
+    stamp=['Jul-Dec\n1998','Jan-Jun\n1999','Jul-Dec\n1999',
+           'Jan-Jun\n2000','Jul-Dec\n2000','Jan-Jun\n2001',
+           'Jul-Dec\n2001','Jan-Jun\n2002','Jul-Dec\n2002']
+    for key in top:
+        color=np.random.rand(3,)
+        #print(key, top_send[key])#(2 * np.pi * np.random.rand(100))
+        plt.plot(stamp,top_receive[key], color=color,label=key)#straight
+        plt.plot(stamp,unique_receive[key], color=color)#dashed - ,label=key
+        
+    plt.ylabel('Number of emails received')
+    plt.xlabel('Time')
+    plt.legend(loc='upper right')
+    plt.title('Top 5 email senders over 5 year')
+    #ax.grid(zorder=0)
     plt.show()
+    #send it as a png, change the specifics - y label & grid background
 
 
 def main():
