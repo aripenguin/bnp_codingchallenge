@@ -115,6 +115,7 @@ def createTimestamp():#add variable csv
                                 #add(sender[0], name, 0)
     print(top_send)
     print(top)
+    print(top_receive)
     
 def findTimestamp(name,dict_top,sender,time):
     #takes in name (row[2] or row[3]), dict_top (top_send or top_receive), sender (for receive)
@@ -157,7 +158,13 @@ def findTimestamp(name,dict_top,sender,time):
     if dict_top=top_receive:
         for person in top:
             if name = person[1]: 
-                add(person[0],sender,count)
+                if sender in person[0]:
+                    #dup - subtract from 2 timestamps, delete from person[0]
+                    dict_top[name][person[0][sender]]-=1 
+                    dict_top[name][count]-=1
+                    del person[0][sender]
+                else:
+                    add(person[0],sender,count)
 
     
 def findUnique():
@@ -172,7 +179,7 @@ def findUnique():
             for colist in top:
                 if (value in colist[0]) and (is_found==0)and (colist[0] != list[0]):
                     #no changes to if statement - just nee to make should correct value in unique is subtracts
-                    stamp=value.value 
+                    stamp=list[value] #value.value
                     unique_receive[list[1]][stamp] -= 1
                     #top[tmp2][2]-=1
                     print (top[list[1]],value) #check if the value is being deleted once
