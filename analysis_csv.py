@@ -1,4 +1,5 @@
 import csv
+import sys
 #import pandas as pan
 import matplotlib.pyplot as plt
 #import array as arr
@@ -6,17 +7,21 @@ from collections import OrderedDict
 import datetime
 import numpy as np
 
-people = {}
-top_send={}
-top1={}
-top2={}
-top3={}
-top4={}
-top5={}
+people = {}#hold person:[# send, # receive] for everyone (question 1)
+top_send={}#holds person:[0*9], one for each of the top5 people. the array is for the 9 different timestamps for emails sent by person
+top1={}#holds person:# for all unique people who contacts the top1 person (question2). the # represents the timestamp 0-8
+top2={}#same as top1 but for top2
+top3={}#same as top1 but for top3
+top4={}#same as top1 but for top4
+top5={}#same as top1 but for top5
 #top=[top1,top2,top3,top4,top5]
 #top=[[top1,''],[top2,''],[top3,''],[top4,''],[top5,'']]
 top=[[top1,'',0],[top2,'',0],[top3,'',0],[top4,'',0],[top5,'',0]]
     #top[#][2]=len(top#)-non-unique
+#top is used to connect the list of top# to the person. might get rid of [2]
+
+#top_received={}#holds person:[0*9] like top_send but holds the # of unique people who contacted the person over the timestamps 
+#unique_received={}#holds person:[0*9] like top_received but only hold the # of unique people across the top5
 
 
 def readCsv():
@@ -81,7 +86,7 @@ def createTimestamp():
         read = csv.reader(readFile, delimiter=',')
         for row in read:
             if row[2] in top_send:
-                #add to a timestamp
+                #add to a timestamp by findTimestamp()
                 year=datetime.datetime.fromtimestamp(float(row[0]) / 1000.0).strftime('%Y')
                 month=datetime.datetime.fromtimestamp(float(row[0]) / 1000.0).strftime('%m')
                 if year == '1998':
@@ -118,11 +123,24 @@ def createTimestamp():
     print(top_send)
     print(top)
     # close the csv?
+def findTimeStamp():
+    #takes in name (row[2] or row[3]), dict_top (top_send or top_receive), list (top1 .. for receive)
+    year=datetime.datetime.fromtimestamp(float(row[0]) / 1000.0).strftime('%Y')
+    month=datetime.datetime.fromtimestamp(float(row[0]) / 1000.0).strftime('%m')
+    count=0 #holds timestamp id
+    if year == '1998':
+        dict_top[name][0]+=1
+        count=0
+    #... for all 8 other timestamps
+    #top_receive also has to send the people to 
+    #change above to a for loop?
+                #If dict_top=top_received: add(list,name,counter#needs adjusts
 
+    
 def findUnique():
     print("In findUnique")
     #set top[#][3]s
-    tmp1=0
+    tmp1=0#do not need 135-146 anymore
     for list in top:
         #print(list)
         #print(len(list[0]))
@@ -134,22 +152,27 @@ def findUnique():
     for i in top:
         print(top[test][1], top[test][2])
         test+=1
-
+    
+    #top_receive will be filled from create & findTimestamp -> set unique_receive = top_receive
+    #go through below to subtract from timestamp if someone in top# is in another top#
+    
     #go through top - for each top1 value - check if in any another top# list
-    tmp2=0
+    #tmp2=0
     #test_num=top[tmp2][2]
-    for list in top:
+    for list in top:#[top#,name]
         for value in list[0]:
             is_found=0
-            #top1 - going through keys.
             for colist in top:
                 if (value in colist[0]) and (is_found==0)and (colist[0] != list[0]):
+                    #no changes to if statement - just nee to make should correct value in unique is subtracts
+                    #stamp=value.value 
+                    #unique_receive[list[1]][stamp] -= 1
                     top[tmp2][2]-=1
                     #print (top[tmp2][1],value) #check if the value is being deleted once
                     #if top[tmp2][0]=top1:test_num
                     is_found=1
 
-        tmp2+=1
+        #tmp2+=1
     test = 0
     print("test-unique against each other")
     for i in top:
