@@ -1,5 +1,5 @@
-# bnp_codingchallenge
-#BNP Data Scientist Technical Exam
+# Event_codingchallenge
+#Data Scientist Technical Exam
 
 #Applicant - Ariann Chai
 
